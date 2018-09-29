@@ -34,7 +34,7 @@ const pollUntilDeployed = (url, expectedContent, timeoutMs = 30 * 1000, retries 
 module.exports = (options) => {
     const getUrls = ACME.getAcmeUrlsAsync(options.production ? ACME.productionServerUrl : ACME.stagingServerUrl);
     const repoUrl = new URL(options.repository);
-    const protocol = options.protocol | 'http';
+    const protocol = options.protocol;
     const gitlabBaseUrl = repoUrl.origin;
     const gitlabRequest = request.defaults({
         headers: { 'PRIVATE-TOKEN': options.token },

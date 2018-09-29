@@ -34,6 +34,10 @@ module.exports = yargs
         describe: 'Obtain a real certificate instead of a dummy one and configure your repository to use it',
         type: 'boolean',
         default: false
+    }).option('protocol', {
+        describe: 'Specify the protocol to use to check the deployed challenge file, default is http',
+        type: 'string',
+        default: 'http'
     }).example('$0 --domain example.com www.example.com --email rolodato@example.com --repository https://gitlab.com/foo/example.gitlab.io --token abc123', 'Simple build where all files are served from public/ inside your repository')
     .example('$0 --jekyll --path / --domain example.com --email rolodato@example.com --repository https://gitlab.example.com/foo/myrepo --token abc123', 'Jekyll website that serves all valid files in your repository\'s root directory')
     .wrap(yargs.terminalWidth())
