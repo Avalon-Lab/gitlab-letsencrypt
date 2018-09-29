@@ -34,6 +34,7 @@ const pollUntilDeployed = (url, expectedContent, timeoutMs = 30 * 1000, retries 
 module.exports = (options) => {
     const getUrls = ACME.getAcmeUrlsAsync(options.production ? ACME.productionServerUrl : ACME.stagingServerUrl);
     const repoUrl = new URL(options.repository);
+    const protocol = options.protocol | 'http';
     const gitlabBaseUrl = repoUrl.origin;
     const gitlabRequest = request.defaults({
         headers: { 'PRIVATE-TOKEN': options.token },
@@ -60,7 +61,7 @@ module.exports = (options) => {
                 content: challengeContent,
                 author_name: 'gitlab-le'
             }
-        })).return([`http://${domain}/.well-known/acme-challenge/${key}`, value]);
+        })).return([`${protocol}://${domain}/.well-known/acme-challenge/${key}`, value]);
     };
 
     const deleteChallenges = (key, repo) => {

@@ -20,6 +20,7 @@ gitlab-le \
 --repository https://gitlab.com/gitlab_user/gitlab_repo `# REQUIRED - Full URL to your GitLab repository` \
 --token      ...                                        `# REQUIRED - GitLab personal access token, see https://gitlab.com/profile/personal_access_tokens` \
 --production                                            `# OPTIONAL - Obtain a real certificate instead of a dummy one and configure your repository to use it`
+--protocol   http | https                               `# OPTIONAL - Specify the protocol to use to check the deployed challenge file, default is http`
 --path                                                  `# OPTIONAL - Absolute path in your repository where challenge files should be uploaded`
 --jekyll                                                `# OPTIONAL - Upload challenge files with a Jekyll-compatible YAML front matter` \
 ```
