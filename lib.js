@@ -41,7 +41,7 @@ module.exports = (options) => {
         json: true,
         baseUrl: `${gitlabBaseUrl}/api/v4`
     });
-    const retryDelayInSeconds = option.retryDelayInSeconds;
+    const retryDelayInSeconds = options.retryDelayInSeconds;
 
     const getRepository = (name) => {
         return gitlabRequest.get({
