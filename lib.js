@@ -40,7 +40,8 @@ module.exports = (options) => {
                 } else {
                     // GitLab CI usually takes 50-80 seconds to build
                     console.log(`Could not find challenge file. Retrying in ${ms(timeoutMs)}...`);
-                    return Promise.delay(timeoutMs).then(() =>
+                    return Promise.delay(timeoutMs).then(() => ACME.getNonce(url, (err) => err))
+                    .then(() =>
                         pollUntilDeployed(url, expectedContent, timeoutMs * 2, retries - 1));
                 }
             });
