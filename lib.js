@@ -11,7 +11,7 @@ const { URL } = require('url');
 
 const generateRsa = () => RSA.generateKeypairAsync(2048, 65537, {});
 
-const pollUntilDeployed = (url, expectedContent, timeoutMs = 30 * 1000, retries = 10) => {
+const pollUntilDeployed = (url, expectedContent, timeoutMs = retryDelayInSeconds * 1000, retries = 10) => {
     if (retries > 0) {
         return request.get({
             url: url,
@@ -41,6 +41,7 @@ module.exports = (options) => {
         json: true,
         baseUrl: `${gitlabBaseUrl}/api/v4`
     });
+    const retryDelayInSeconds = option.retryDelayInSeconds;
 
     const getRepository = (name) => {
         return gitlabRequest.get({
