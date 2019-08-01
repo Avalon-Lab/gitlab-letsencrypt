@@ -11,6 +11,26 @@ const { URL } = require('url');
 
 const generateRsa = () => RSA.generateKeypairAsync(2048, 65537, {});
 
+const pollUntilDeployed = (url, expectedContent, timeoutMs = 30 * 1000, retries = 10) => {
+    if (retries > 0) {
+        return request.get({
+            url: url,
+            simple: false // don't reject on 404
+        }).then(res => {
+            if (res === expectedContent) {
+                return Promise.resolve();
+            } else {
+                // GitLab CI usually takes 50-80 seconds to build
+                console.log(`Could not find challenge file. Retrying in ${ms(timeoutMs)}...`);
+                return Promise.delay(timeoutMs).then(() =>
+                    pollUntilDeployed(url, expectedContent, timeoutMs * 2, retries - 1));
+            }
+        });
+    } else {
+        return Promise.reject(`Timed out while waiting for challenge file at ${url}`);
+    }
+};
+
 module.exports = (options) => {
     const getUrls = ACME.getAcmeUrlsAsync(options.production ? ACME.productionServerUrl : ACME.stagingServerUrl);
     const repoUrl = new URL(options.repository);
@@ -21,33 +41,11 @@ module.exports = (options) => {
         json: true,
         baseUrl: `${gitlabBaseUrl}/api/v4`
     });
-    const retryDelayInSeconds = options.retryDelayInSeconds;
 
     const getRepository = (name) => {
         return gitlabRequest.get({
             url: `/projects/${encodeURIComponent(name.replace('/', ''))}`
         });
-    };
-
-    const pollUntilDeployed = (url, expectedContent, timeoutMs = retryDelayInSeconds * 1000, retries = 10) => {
-        if (retries > 0) {
-            return request.get({
-                url: url,
-                simple: false // don't reject on 404
-            }).then(res => {
-                if (res === expectedContent) {
-                    return Promise.resolve();
-                } else {
-                    // GitLab CI usually takes 50-80 seconds to build
-                    console.log(`Could not find challenge file. Retrying in ${ms(timeoutMs)}...`);
-                    return Promise.delay(timeoutMs).then(() => ACME.getNonce(url, (err) => err))
-                    .then(() =>
-                        pollUntilDeployed(url, expectedContent, timeoutMs * 2, retries - 1));
-                }
-            });
-        } else {
-            return Promise.reject(`Timed out while waiting for challenge file at ${url}`);
-        }
     };
 
     const uploadChallenge = (key, value, repo, domain) => {
